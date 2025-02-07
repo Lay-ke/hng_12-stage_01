@@ -1,8 +1,11 @@
-from fastapi import FastAPI, Query, HTTPException
+
+from fastapi import FastAPI, Query
+from fastapi.responses import JSONResponse
 from typing import Union
 import requests
 
 app = FastAPI()
+
 
 def is_prime(n: int) -> bool:
     if n < 2:
@@ -32,10 +35,6 @@ def classify_number(n: Union[int, float]):
     properties = ["odd" if int(n) % 2 != 0 else "even"]
     if is_armstrong(int(n)):
         properties.append("armstrong")
-    if isinstance(n, int) and is_prime(n):
-        properties.append("prime")
-    if isinstance(n, int) and is_perfect(n):
-        properties.append("perfect")
     
     return {
         "number": n,
@@ -54,6 +53,10 @@ def get_number_properties(number: str = Query(..., description="A number to clas
         else:
             number = int(number)
     except ValueError:
-        raise HTTPException(status_code=400, detail={"number": str(number), "error": True})
+        return JSONResponse(
+            status_code=400,
+            content={"number": str(number), "error": True},
+            headers={"Content-Type": "application/json"}
+        )
     
     return classify_number(number)
