@@ -76,8 +76,6 @@ pipeline {
                                 docker stop number-classifier-app || true
                                 docker rm number-classifier-app || true
                                fi
-                               docker ps --filter "name=number-classifier-app" -q && docker stop number-classifier-app || true
-                               docker ps -a --filter "name=number-classifier-app" -q && docker rm number-classifier-app || true
                                docker run -d -p 80:80 --name number-classifier-app mintah/number-classifier-app:latest
                                echo "Deployment complete"
                            EOF
