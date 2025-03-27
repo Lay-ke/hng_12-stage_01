@@ -21,25 +21,28 @@ pipeline {
 
         stage('Testing') {
             steps {
-                sh 'echo "Running tests"'
-                sh 'docker run -d -p 80:80 mintah/number-classifier-app:latest'
-                // Wait for the application to be ready (adjust sleep time as necessary)
-                sh 'sleep 10'
-                
-                // Run a GET request to the classify-number route
-                def response = sh(script: 'curl -s -o response.txt -w "%{http_code}" "http://localhost/api/classify-number?number=153"', returnStdout: true).trim()
-                
-                // Read the response code and content (can be expanded for detailed checks)
-                def statusCode = response.split("\n")[-1]
-                def responseContent = readFile('response.txt').trim()
+                script {
+                    echo "Running tests"
+                    docker run -d -p 80:80 mintah/number-classifier-app:latest
+                    // Wait for the application to be ready (adjust sleep time as necessary)
+                    sh 'sleep 10'
 
-                echo "Response Status Code: ${statusCode}"
-                echo "Response Body: ${responseContent}"
+                    // Run a GET request to the classify-number route
+                    def response = sh(script: 'curl -s -o response.txt -w "%{http_code}" "http://localhost/api/classify-number?number=153"', returnStdout: true).trim()
+
+                    // Read the response code and content (can be expanded for detailed checks)
+                    def statusCode = response.split("\n")[-1]
+                    def responseContent = readFile('response.txt').trim()
+
+                    echo "Response Status Code: ${statusCode}"
+                    echo "Response Body: ${responseContent}"
+
+                    // Verify that the status code is 200 (OK)
+                    if (statusCode != '200') {
+                        error "API test failed: Status code ${statusCode}"
+                    }                
+                }
                 
-                // Verify that the status code is 200 (OK)
-                if (statusCode != '200') {
-                    error "API test failed: Status code ${statusCode}"
-                }                
             }
         }
 
