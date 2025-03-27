@@ -64,7 +64,7 @@ pipeline {
                        echo "Using EC2 user: \$EC2_USER"
                        echo "Private key path: \$PRIVATE_KEY_PATH"
                        // EC2 host (replace with your actual EC2 public IP)
-                       EC2_HOST="your-ec2-public-ip"  
+                       EC2_HOST="3.252.138.182"  
                        // Now you can use the SSH key and username in the SSH command
                        sh """
                            echo "Inside EC2 instance. Starting deployment..."
