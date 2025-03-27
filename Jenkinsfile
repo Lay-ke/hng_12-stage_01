@@ -67,28 +67,21 @@ pipeline {
                        // EC2 host (replace with your actual EC2 public IP)
                        EC2_HOST="3.252.138.182"  
                        // Now you can use the SSH key and username in the SSH command
-                       
-                       echo "Inside EC2 instance. Starting deployment..."
-                       sh '''
-                        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $PRIVATE_KEY_PATH $EC2_USER@$EC2_HOST << 'EOF'
-                            echo "Deployment started..."
-                            
-                            # Pull the latest Docker image
-                            docker pull mintah/number-classifier-app:latest
-                            
-                            # Check if the container is running, then stop and remove it if necessary
-                            if [ "$(docker ps -q --filter "name=number-classifier-app")" ]; then
+                       sh """
+                           echo "Inside EC2 instance. Starting deployment..."
+                           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i \$PRIVATE_KEY_PATH \$EC2_USER@$EC2_HOST << 'EOF'
+                               echo "Deployment started..."
+                               docker pull mintah/number-classifier-app:latest
+                               if docker ps -q --filter "name=number-classifier-app"; then
                                 docker stop number-classifier-app || true
-                                docker ps -a --filter "name=number-classifier-app" -q | xargs -r docker rm || true
-                            fi
-                            
-                            # Run the new container
-                            docker run -d -p 80:80 --name number-classifier-app mintah/number-classifier-app:latest
-                            
-                            echo "Deployment complete"
-                        EOF
-                    '''
-
+                                docker rm number-classifier-app || true
+                               fi
+                               docker ps --filter "name=number-classifier-app" -q && docker stop number-classifier-app || true
+                               docker ps -a --filter "name=number-classifier-app" -q && docker rm number-classifier-app || true
+                               docker run -d -p 80:80 --name number-classifier-app mintah/number-classifier-app:latest
+                               echo "Deployment complete"
+                           EOF
+                       """
                     }
                 }
             }
