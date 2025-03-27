@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     echo "Running tests"
-                    docker run -d -p 80:80 mintah/number-classifier-app:latest
+                    sh 'docker run -d -p 80:80 mintah/number-classifier-app:latest'
                     // Wait for the application to be ready (adjust sleep time as necessary)
                     sh 'sleep 10'
 
@@ -31,7 +31,7 @@ pipeline {
                     def response = sh(script: 'curl -s -o response.txt -w "%{http_code}" "http://localhost/api/classify-number?number=153"', returnStdout: true).trim()
 
                     // Read the response code and content (can be expanded for detailed checks)
-                    def statusCode = response.split("\n")[-1]
+                    def statusCode = response[-3..-1]
                     def responseContent = readFile('response.txt').trim()
 
                     echo "Response Status Code: ${statusCode}"
