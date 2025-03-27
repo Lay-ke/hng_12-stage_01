@@ -68,18 +68,18 @@ pipeline {
                        EC2_HOST="3.252.138.182"  
                        // Now you can use the SSH key and username in the SSH command
                        sh """
-                           echo "Inside EC2 instance. Starting deployment..."
-                           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i \$PRIVATE_KEY_PATH \$EC2_USER@$EC2_HOST << 'EOF'
-                               echo "Deployment started..."
-                               docker pull mintah/number-classifier-app:latest
-                               if docker ps -q --filter "name=number-classifier-app"; then
-                                docker stop number-classifier-app || true
-                                docker rm number-classifier-app || true
-                               fi
-                               docker run -d -p 80:80 --name number-classifier-app mintah/number-classifier-app:latest
-                               echo "Deployment complete"
-                           EOF
-                       """
+                            echo "Inside EC2 instance. Starting deployment..."
+                            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i \$PRIVATE_KEY_PATH \$EC2_USER@\$EC2_HOST <<EOF
+                                echo "Deployment started..."
+                                docker pull mintah/number-classifier-app:latest
+                                if docker ps -q --filter "name=number-classifier-app"; then
+                                    docker stop number-classifier-app || true
+                                    docker rm number-classifier-app || true
+                                fi
+                                docker run -d -p 80:80 --name number-classifier-app mintah/number-classifier-app:latest
+                                echo "Deployment complete"
+                            EOF
+                        """
                     }
                 }
             }
