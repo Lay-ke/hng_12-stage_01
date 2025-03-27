@@ -49,7 +49,7 @@ pipeline {
         stage('Publishing to docker hub') {
             steps {
                 sh 'echo "Publishing the image to Docker Hub"'
-                withDockerRegistry([credentialsId: 'docker_hub_credentials', url: 'https://index.docker.io/v1/']) {
+                withDockerRegistry([credentialsId: 'docker-credentials', url: 'https://index.docker.io/v1/']) {
                     sh 'docker push mintah/number-classifier-app:latest'
                 }
             }
