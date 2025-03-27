@@ -70,9 +70,10 @@ pipeline {
                            echo "Inside EC2 instance. Starting deployment..."
                            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i \$PRIVATE_KEY_PATH \$EC2_USER@$EC2_HOST << 'EOF'
                                echo "Deployment started..."
-                               mkdir -p api_app && cd api_app
-                               git clone https://github.com/Lay-ke/hng_12-stage_01
-                               pip install -r requirements.txt
+                               docker pull mintah/number-classifier-app:latest
+                               docker stop number-classifier-app || true
+                               docker rm number-classifier-app || true
+                               docker run -d -p 80:80 --name number-classifier-app mintah/number-classifier-app:latest
                                echo "Deployment complete"
                            EOF
                        """
